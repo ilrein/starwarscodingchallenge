@@ -56,7 +56,7 @@ export default class ListWrapper extends React.Component {
             macheteOrder: this.state.macheteOrder.concat([movie.imdbId]),
             macheteTitles: this.state.macheteTitles.concat([res.data.Title])
           }, () => {
-            console.log(this.state)
+            // console.log(this.state)
           });
         }
       });
@@ -64,18 +64,20 @@ export default class ListWrapper extends React.Component {
 
     // Order by story
     const story = _.sortBy(this.props.data, (obj) => {
-      if (obj.position.story != undefined) {
-        return obj.position.story;
-      }
+      return obj.position.episode
     });
+    console.log('story array', story);
 
     // Get their titles
     story.forEach((movie, index) => {
       HTTP.get(`${this.state.API}${movie.imdbId}`, (err, res) => {
         if (!err) {
+          console.log(movie, res.data.Title)
           this.setState({
             storyTitles: this.state.storyTitles.concat([res.data.Title]),
             storyOrder: this.state.storyOrder.concat([movie.imdbId])
+          }, () => {
+            // console.log(this.state)
           });
         }
       });
