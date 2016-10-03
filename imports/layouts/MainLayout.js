@@ -7,6 +7,9 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 // Navbar
 import AppNavBar from '../ui/AppNavBar';
 
+// Styles
+import '../styles/main.scss'
+
 const MainLayout = ({ content }) => (
   <MuiThemeProvider muiTheme={getMuiTheme()}>
     <main className="main-layout">
