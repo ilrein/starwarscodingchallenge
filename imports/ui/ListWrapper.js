@@ -1,6 +1,6 @@
+import { HTTP } from 'meteor/http';
 import React from 'react';
 import { List, ListItem } from 'material-ui/List';
-// import { _ } from 'lodash';
 
 // Icons
 import AvMovie from 'material-ui/svg-icons/av/movie';
@@ -18,9 +18,13 @@ export default class ListWrapper extends React.Component {
 
     this.state = {
       open: true,
-      orderTypes: ['Machete', 'Story']
+      orderTypes: ['Machete', 'Story'],
+      API: 'http://www.omdbapi.com/?i=',
+      macheteOrder: [],
+      macheteTitles: [],
+      storyTitles: [],
+      storyOrder: []
     };
-    // console.log(this.props.data);
 
     this.handleToggle = this.handleToggle.bind(this);
   }
@@ -31,27 +35,54 @@ export default class ListWrapper extends React.Component {
     });
   };
 
-  render() {
+  componentDidMount() {
+    // Organize by priority
     let machete = _.sortBy(this.props.data, (obj) => {
       if (obj.position.machete != undefined) {
         return obj.position.machete;
       }
     });
 
+    // Filter out any movies not in the machete sequence
     machete = machete.filter((obj) => {
       return obj.position.machete !== null
     });
 
-    let story = _.sortBy(this.props.data, (obj) => {
+    // Get their titles
+    machete.forEach((movie, index) => {
+      HTTP.get(`${this.state.API}${movie.imdbId}`, (err, res) => {
+        if (!err) {
+          this.setState({
+            macheteOrder: this.state.macheteOrder.concat([movie.imdbId]),
+            macheteTitles: this.state.macheteTitles.concat([res.data.Title])
+          }, () => {
+            console.log(this.state)
+          });
+        }
+      });
+    });
+
+    // Order by story
+    const story = _.sortBy(this.props.data, (obj) => {
       if (obj.position.story != undefined) {
         return obj.position.story;
       }
     });
 
-    story = story.filter((obj) => {
-      return obj.position.story !== null
+    // Get their titles
+    story.forEach((movie, index) => {
+      HTTP.get(`${this.state.API}${movie.imdbId}`, (err, res) => {
+        if (!err) {
+          this.setState({
+            storyTitles: this.state.storyTitles.concat([res.data.Title]),
+            storyOrder: this.state.storyOrder.concat([movie.imdbId])
+          });
+        }
+      });
     });
+  }
 
+  render() {
     return (
       <div>
         <List>
@@ -76,13 +107,13 @@ export default class ListWrapper extends React.Component {
               primaryText="Order of Viewing"
               leftIcon={<ImageMovieFilter />}
               initiallyOpen={true}
-              primaryTogglesNestedList={true}
-              nestedItems={machete.map((item, index) => {
+              nestedItems={this.state.macheteTitles.map((title, index) => {
                 return (
                   <ListItem
                     key={index}
-                    primaryText={item.imdbId}
+                    primaryText={title}
                     leftIcon={<AvMovie />}
+                    onTouchTap={() => { FlowRouter.go(`/movie/${this.state.macheteOrder[index]}`) }}
                   />
                 )
               })}
@@ -91,13 +122,13 @@ export default class ListWrapper extends React.Component {
               primaryText="Order of Viewing"
               leftIcon={<ImageMovieFilter />}
               initiallyOpen={true}
-              primaryTogglesNestedList={true}
-              nestedItems={story.map((item, index) => {
+              nestedItems={this.state.storyTitles.map((title, index) => {
                 return (
                   <ListItem
                     key={index}
-                    primaryText="index"
+                    primaryText={title}
                     leftIcon={<AvMovie />}
+                    onTouchTap={() => { FlowRouter.go(`/movie/${this.state.storyOrder[index]}`) }}
                   />
                 )
               })}
@@ -108,3 +139,11 @@ export default class ListWrapper extends React.Component {
     );
   }
 }
+
+// return (
+//   <ListItem
+//     key={index}
+//     primaryText={res.data.Title}
+//     leftIcon={<AvMovie />}
+//   />
+// )

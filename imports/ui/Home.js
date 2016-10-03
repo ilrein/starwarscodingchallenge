@@ -1,6 +1,7 @@
 import { HTTP } from 'meteor/http';
 import React, { Component } from 'react';
 
+import Loading from './Loading';
 import ListWrapper from './ListWrapper';
 
 export default class Home extends Component {
@@ -33,11 +34,24 @@ export default class Home extends Component {
         {
           this.state.loaded ?
           <div>
-            <ListWrapper data={this.state.data} />
+            <ListWrapper
+              data={this.state.data}
+            />
           </div> :
-          <div> Loading...</div>
+          <Loading />
         }
       </section>
     )
   }
 }
+
+// HTTP.get(`${this.state.API}${this.props.params.id}`, (err, res) => {
+//   if (!err) {
+//     this.setState({
+//       data: res,
+//       loaded: true
+//     }, () => {
+//       console.log(this.state.data);
+//     });
+//   }
+// })

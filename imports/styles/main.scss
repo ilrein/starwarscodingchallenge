@@ -1,7 +1,30 @@
-  .significant {
-    color: teal;
-  }
+.significant {
+  color: teal;
+}
 
-  .toggle-wrapper {
-    padding: 1rem;
+.toggle-wrapper {
+  padding: 1rem;
+}
+
+.header {
+  svg {
+    height: 50px !important;
+    width: 50px !important;
+    color: white !important;
+    cursor: pointer;
   }
+  svg:hover {
+    color: darken(teal, 50%)!important;
+  }
+}
+
+.show-view-wrapper {
+  .show-view {
+    padding: 1rem;
+    img {
+      min-width: inherit !important;
+      width: inherit !important;
+      display: inherit !important;
+    }
+  }
+}
